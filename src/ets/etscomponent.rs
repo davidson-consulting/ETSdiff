@@ -79,8 +79,8 @@ impl EComponent {
         Self {
             value: 0.0,
             services: Rc::<RefCell<Vec<Service>>>::downgrade(services),
-            start_sensor: SystemCall::new("systemctl start vjoule_std_sensor.service"),
-            stop_sensor: SystemCall::new("systemctl stop vjoule_std_sensor.service"),
+            start_sensor: SystemCall::new("systemctl start vjoule_sensor.service"),
+            stop_sensor: SystemCall::new("systemctl stop vjoule_sensor.service"),
             start_formula: SystemCall::new("systemctl start vjoule_simple_formula.service"),
             stop_formula: SystemCall::new("systemctl stop vjoule_simple_formula.service"),
         }

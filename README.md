@@ -17,7 +17,8 @@ Analyses consumption of a program with 3 criteria: energy, transfer and storage
 
 **ETSdiff and dependencies need to works with privileged access -> so you need to be in sudoer list**
 
-1. Install vjoule from deb package
+1. Install [vjoule](https://github.com/davidson-consulting/vjoule/releases/tag/v0.2) from deb package
+    * update `/etc/vjoule/sensor/config.toml` by adding `"controlled.slice"` into `slices`
 1. Ubuntu depenencies:
     * `sudo apt install tshark`
 1. Install [rust language](https://www.rust-lang.org/tools/install) 
