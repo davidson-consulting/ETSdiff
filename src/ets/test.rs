@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2023 Davidson <twister@davidson.fr>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 use std::error::Error;
 
 use super::system_call::SystemCall;

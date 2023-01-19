@@ -1,8 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2023 Davidson <twister@davidson.fr>
+SPDX-License-Identifier: CC-BY-NC-SA-4.0
+-->
+
+[![REUSE status](https://api.reuse.software/badge/github.com/fsfe/reuse-tool)](https://api.reuse.software/info/github.com/fsfe/reuse-tool)
+
+--
+
 # ETSdiff
 
 Analyses consumption of a program with 3 criteria: energy, transfer and storage 
-
-More details on [Redmine](https://redmine.davidson.fr/projects/approche-davidson/wiki)
 
 ## Prerequisite
 
@@ -24,4 +31,12 @@ cargo run
 ```
 
 ## License
-Not yet choosen. 
+
+This work is licensed under multiple licences. Because keeping this section
+up-to-date is challenging, here is a brief summary:
+
+- All original source code is licensed under GPL-3.0-or-later.
+- All documentation is licensed under CC-BY-SA-4.0.
+- Some configuration and data files are licensed under CC0-1.0.
+
+For more accurate information, check the individual files.
