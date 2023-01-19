@@ -5,8 +5,6 @@ SPDX-License-Identifier: CC-BY-NC-SA-4.0
 
 [![REUSE status](https://api.reuse.software/badge/github.com/fsfe/reuse-tool)](https://api.reuse.software/info/github.com/fsfe/reuse-tool)
 
---
-
 # ETSdiff
 
 Analyses consumption of a program with 3 criteria: energy, transfer and storage 
