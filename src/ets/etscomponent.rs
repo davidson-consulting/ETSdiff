@@ -18,6 +18,8 @@ pub trait ETSComponent {
     fn value(&self) -> f64 {
         0.0
     }
+    fn before_campaign(&mut self) {}
+    fn after_campaign(&mut self) {}
     fn before_test(&mut self) {}
     fn after_test(&mut self) {}
 }
@@ -25,7 +27,7 @@ pub trait ETSComponent {
 // ===
 
 pub struct EComponent {
-    value: f64,
+    values: Vec<f64>,
     services: Weak<RefCell<Vec<Service>>>,
     start_sensor: SystemCall,
     stop_sensor: SystemCall,
@@ -35,32 +37,32 @@ pub struct EComponent {
 
 impl ETSComponent for EComponent {
     fn value(&self) -> f64 {
-        self.to_joules()
+        self.values.iter().sum()
     }
-    fn before_test(&mut self) {
+    fn before_campaign(&mut self) {
         if self.start_sensor.execute().is_err() {
             eprintln!("Can't start vjoule sensor service");
         }
         self.wait_sensor_signal();
-
         if self.start_formula.execute().is_err() {
             eprintln!("Can't start vjoule formula service");
         }
         self.wait_formula_signal();
     }
-    fn after_test(&mut self) {
-        self.wait_formula_signal();
-
+    fn after_campaign(&mut self) {
         if self.stop_formula.execute().is_err() {
             eprintln!("Can't stop vjoule formula service");
         }
         if self.stop_sensor.execute().is_err() {
             eprintln!("Can't stop vjoule sensor service");
         }
-
-        self.value = 0.0;
+    }
+    fn before_test(&mut self) {
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
+        self.values.resize(services.len(), 0.0);
+        self.wait_formula_signal();
+        let mut i = 0;
         for s in &*services {
             if let Some(pn) = &s.process_name {
                 let cpu_s = std::fs::read_to_string(format!(
@@ -68,7 +70,25 @@ impl ETSComponent for EComponent {
                     pn
                 ))
                 .unwrap();
-                self.value += cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap();
+                self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap();
+                i += 1;
+            }
+        }
+    }
+    fn after_test(&mut self) {
+        let services_rc = Weak::upgrade(&self.services).unwrap();
+        let services = services_rc.borrow();
+        self.wait_formula_signal();
+        let mut i = 0;
+        for s in &*services {
+            if let Some(pn) = &s.process_name {
+                let cpu_s = std::fs::read_to_string(format!(
+                    "/etc/vjoule/simple_formula/controlled.slice/{}/package",
+                    pn
+                ))
+                .unwrap();
+                self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap() - self.values[i];
+                i += 1;
             }
         }
     }
@@ -77,16 +97,16 @@ impl ETSComponent for EComponent {
 impl EComponent {
     pub fn new(services: &ServicesLink) -> Self {
         Self {
-            value: 0.0,
+            values: vec![0.0],
             services: Rc::<RefCell<Vec<Service>>>::downgrade(services),
-            start_sensor: SystemCall::new("systemctl start vjoule_sensor.service"),
+            start_sensor: SystemCall::new("systemctl restart vjoule_sensor.service"),
             stop_sensor: SystemCall::new("systemctl stop vjoule_sensor.service"),
-            start_formula: SystemCall::new("systemctl start vjoule_simple_formula.service"),
+            start_formula: SystemCall::new("systemctl restart vjoule_simple_formula.service"),
             stop_formula: SystemCall::new("systemctl stop vjoule_simple_formula.service"),
         }
     }
     pub fn to_joules(&self) -> f64 {
-        return self.value;
+        return self.value();
     }
     fn wait_formula_signal(&self) {
         let mut inotify = Inotify::init().expect("Error while initializing inotify instance");
@@ -296,6 +316,7 @@ mod tests {
                 }
             }
         }
+        ec.before_campaign();
         ec.before_test();
 
         use std::{thread, time};
@@ -319,6 +340,8 @@ mod tests {
 
         assert!(ec.to_joules() > 0.0);
         println!("E.value => {}", ec.value());
+
+        ec.after_campaign();
 
         Ok(())
     }
