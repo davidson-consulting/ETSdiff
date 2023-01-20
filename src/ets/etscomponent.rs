@@ -18,8 +18,8 @@ pub trait ETSComponent {
     fn value(&self) -> f64 {
         0.0
     }
-    fn start(&mut self) {}
-    fn stop(&mut self) {}
+    fn before_test(&mut self) {}
+    fn after_test(&mut self) {}
 }
 
 // ===
@@ -37,7 +37,7 @@ impl ETSComponent for EComponent {
     fn value(&self) -> f64 {
         self.to_joules()
     }
-    fn start(&mut self) {
+    fn before_test(&mut self) {
         if self.start_sensor.execute().is_err() {
             eprintln!("Can't start vjoule sensor service");
         }
@@ -48,7 +48,7 @@ impl ETSComponent for EComponent {
         }
         self.wait_formula_signal();
     }
-    fn stop(&mut self) {
+    fn after_test(&mut self) {
         self.wait_formula_signal();
 
         if self.stop_formula.execute().is_err() {
@@ -134,7 +134,7 @@ pub struct TComponent {
 }
 
 impl ETSComponent for TComponent {
-    fn start(&mut self) {
+    fn before_test(&mut self) {
         self.value = 0;
 
         let mut filter = String::from("");
@@ -168,7 +168,7 @@ impl ETSComponent for TComponent {
             }
         };
     }
-    fn stop(&mut self) {
+    fn after_test(&mut self) {
         match &mut self.rtshark {
             Some(s) => {
                 s.kill();
@@ -296,7 +296,7 @@ mod tests {
                 }
             }
         }
-        ec.start();
+        ec.before_test();
 
         use std::{thread, time};
         let mut sc = SystemCall::new("ps aux");
@@ -307,7 +307,7 @@ mod tests {
             thread::sleep(time::Duration::from_millis(100));
         }
 
-        ec.stop();
+        ec.after_test();
         {
             let mut services = link.borrow_mut();
             for s in &mut *services {
@@ -364,25 +364,25 @@ mod tests {
         let mut tc = TComponent::new(&link);
 
         // Do tests requests
-        tc.start();
+        tc.before_test();
         let res = reqwest::blocking::get("http://localhost:8881/simple").unwrap();
         let body = res.text().unwrap();
         assert_eq!("0123456789", body);
         let res = reqwest::blocking::get("http://localhost:8882/double").unwrap();
         let body = res.text().unwrap();
         assert_eq!("01234567890123456789", body);
-        tc.stop();
+        tc.after_test();
         let t1 = tc.to_octets();
         assert!(t1 > "0123456789".len() as u64);
 
-        tc.start();
+        tc.before_test();
         let res = reqwest::blocking::get("http://localhost:8881/simple").unwrap();
         let body = res.text().unwrap();
         assert_eq!("0123456789", body);
         let res = reqwest::blocking::get("http://localhost:8882/double").unwrap();
         let body = res.text().unwrap();
         assert_eq!("01234567890123456789", body);
-        tc.stop();
+        tc.after_test();
         let t2 = tc.to_octets();
         assert!(t2 > "0123456789".len() as u64);
         assert_eq!(t1, t2);

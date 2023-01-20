@@ -141,21 +141,21 @@ impl ETSdiff {
                 None => println!("      No TComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting TComponent");
-                    c.start();
+                    c.before_test();
                 }
             }
             match self.s_component {
                 None => println!("      No SComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting SComponent");
-                    c.start();
+                    c.before_test();
                 }
             }
             match self.e_component {
                 None => println!("      No EComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting EComponent");
-                    c.start();
+                    c.before_test();
                 }
             }
 
@@ -167,21 +167,21 @@ impl ETSdiff {
                 None => println!("      No EComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping EComponent");
-                    c.stop();
+                    c.after_test();
                 }
             }
             match self.t_component {
                 None => println!("      No TComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping TComponent");
-                    c.stop();
+                    c.after_test();
                 }
             }
             match self.s_component {
                 None => println!("      No SComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping SComponent");
-                    c.stop();
+                    c.after_test();
                 }
             }
 
