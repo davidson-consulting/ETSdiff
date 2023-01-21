@@ -70,6 +70,55 @@ impl ETSdiff {
             .get_ordered_list(self.tests.len().try_into().unwrap())
     }
 
+    fn prepare_etscomponents(&mut self) {
+        println!("Preparing ETSComponents...");
+        match self.t_component {
+            None => println!("  No TComponent"),
+            Some(ref mut c) => {
+                println!("  Preparing TComponent");
+                c.before_campaign();
+            }
+        }
+        match self.s_component {
+            None => println!("  No SComponent"),
+            Some(ref mut c) => {
+                println!("  Preparing SComponent");
+                c.before_campaign();
+            }
+        }
+        match self.e_component {
+            None => println!("  No EComponent"),
+            Some(ref mut c) => {
+                println!("  Preparing EComponent");
+                c.before_campaign();
+            }
+        }
+    }
+    fn release_etscomponents(&mut self) {
+        println!("Releasing ETSComponents...");
+        match self.t_component {
+            None => println!("  No TComponent"),
+            Some(ref mut c) => {
+                println!("  Releasing TComponent");
+                c.after_campaign();
+            }
+        }
+        match self.s_component {
+            None => println!("  No SComponent"),
+            Some(ref mut c) => {
+                println!("  Releasing SComponent");
+                c.after_campaign();
+            }
+        }
+        match self.e_component {
+            None => println!("  No EComponent"),
+            Some(ref mut c) => {
+                println!("  Realeasing EComponent");
+                c.after_campaign();
+            }
+        }
+    }
+
     fn prepare_services(&mut self) {
         let mut services = self.services.borrow_mut();
         println!("Prepare {} services...", services.len());
@@ -126,6 +175,7 @@ impl ETSdiff {
         println!("Ordered test: {:?}", tests_order);
         println!("--\n");
 
+        self.prepare_etscomponents();
         self.prepare_services();
 
         println!("Iterations:");
@@ -141,21 +191,21 @@ impl ETSdiff {
                 None => println!("      No TComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting TComponent");
-                    c.start();
+                    c.before_test();
                 }
             }
             match self.s_component {
                 None => println!("      No SComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting SComponent");
-                    c.start();
+                    c.before_test();
                 }
             }
             match self.e_component {
                 None => println!("      No EComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting EComponent");
-                    c.start();
+                    c.before_test();
                 }
             }
 
@@ -167,21 +217,21 @@ impl ETSdiff {
                 None => println!("      No EComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping EComponent");
-                    c.stop();
+                    c.after_test();
                 }
             }
             match self.t_component {
                 None => println!("      No TComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping TComponent");
-                    c.stop();
+                    c.after_test();
                 }
             }
             match self.s_component {
                 None => println!("      No SComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping SComponent");
-                    c.stop();
+                    c.after_test();
                 }
             }
 
@@ -212,6 +262,7 @@ impl ETSdiff {
         println!("--\n");
 
         self.release_services();
+        self.release_etscomponents();
 
         // report
         println!("Finalizing report");
