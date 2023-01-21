@@ -42,6 +42,15 @@ impl Report {
     pub fn add_test_report(&mut self, ir: TestReport) {
         self.details.push(ir);
     }
+    fn median(&self, mut values: Vec<f64>) -> f64 {
+        values.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+        if 0 == values.len() % 2 {
+            (values[(values.len() / 2) - 1] + values[values.len() / 2]) / 2.0
+        } else {
+            values[values.len() / 2]
+        }
+    }
     pub fn compute_total(&mut self) {
         self.total = Vec::new();
         let mut tr_dict_nb = HashMap::<String, u64>::new();
@@ -98,6 +107,17 @@ mod tests {
         );
 
         Ok(())
+    }
+
+    #[test]
+    fn test_report_median() {
+        let r = Report::new();
+
+        let values_odd = vec![8.11, 20.2, 7.11, 9.10, 8.09, 7.9, 8.1];
+        assert_eq!(8.1, r.median(values_odd));
+
+        let values_even = vec![8.11, 20.2, 7.11, 9.10, 8.09, 7.9];
+        assert_eq!(8.1, r.median(values_even));
     }
 
     #[test]
