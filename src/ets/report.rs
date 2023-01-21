@@ -42,31 +42,40 @@ impl Report {
     pub fn add_test_report(&mut self, ir: TestReport) {
         self.details.push(ir);
     }
+    fn median(&self, mut values: Vec<f64>) -> f64 {
+        values.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+        if 0 == values.len() % 2 {
+            (values[(values.len() / 2) - 1] + values[values.len() / 2]) / 2.0
+        } else {
+            values[values.len() / 2]
+        }
+    }
     pub fn compute_total(&mut self) {
         self.total = Vec::new();
-        let mut tr_dict_nb = HashMap::<String, u64>::new();
-        let mut tr_dict_e = HashMap::<String, f64>::new();
-        let mut tr_dict_t = HashMap::<String, u64>::new();
-        let mut tr_dict_s = HashMap::<String, u64>::new();
+        let mut tr_dict_e = HashMap::<String, Vec<f64>>::new();
+        let mut tr_dict_t = HashMap::<String, Vec<f64>>::new();
+        let mut tr_dict_s = HashMap::<String, Vec<f64>>::new();
 
         for tr in &self.details {
-            if !tr_dict_nb.contains_key(&tr.name) {
-                tr_dict_nb.insert(String::from(&tr.name), 1);
-                tr_dict_e.insert(String::from(&tr.name), tr.energy);
-                tr_dict_t.insert(String::from(&tr.name), tr.transfer);
-                tr_dict_s.insert(String::from(&tr.name), tr.storage);
+            if !tr_dict_e.contains_key(&tr.name) {
+                tr_dict_e.insert(String::from(&tr.name), vec![tr.energy]);
+                tr_dict_t.insert(String::from(&tr.name), vec![tr.transfer as f64]);
+                tr_dict_s.insert(String::from(&tr.name), vec![tr.storage as f64]);
             } else {
-                *tr_dict_nb.get_mut(&tr.name).unwrap() += 1;
-                *tr_dict_e.get_mut(&tr.name).unwrap() += tr.energy;
-                *tr_dict_t.get_mut(&tr.name).unwrap() += tr.transfer;
-                *tr_dict_s.get_mut(&tr.name).unwrap() += tr.storage;
+                tr_dict_e.get_mut(&tr.name).unwrap().push(tr.energy);
+                tr_dict_s
+                    .get_mut(&tr.name)
+                    .unwrap()
+                    .push(tr.transfer as f64);
+                tr_dict_s.get_mut(&tr.name).unwrap().push(tr.storage as f64);
             }
         }
         for key in tr_dict_e.keys().sorted() {
             let mut tr = TestReport::new(key);
-            tr.energy = tr_dict_e[key] / (tr_dict_nb[key] as f64);
-            tr.transfer = tr_dict_t[key] / tr_dict_nb[key];
-            tr.storage = tr_dict_s[key] / tr_dict_nb[key];
+            tr.energy = self.median(tr_dict_e[key].clone());
+            tr.transfer = self.median(tr_dict_t[key].clone()) as u64;
+            tr.storage = self.median(tr_dict_s[key].clone()) as u64;
 
             self.total.push(tr);
         }
@@ -98,6 +107,17 @@ mod tests {
         );
 
         Ok(())
+    }
+
+    #[test]
+    fn test_report_median() {
+        let r = Report::new();
+
+        let values_odd = vec![8.11, 20.2, 7.11, 9.10, 8.09, 7.9, 8.1];
+        assert_eq!(8.1, r.median(values_odd));
+
+        let values_even = vec![8.11, 20.2, 7.11, 9.10, 8.09, 7.9];
+        assert_eq!(8.1, r.median(values_even));
     }
 
     #[test]
