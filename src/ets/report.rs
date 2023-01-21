@@ -3,6 +3,7 @@
 
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
+use stats::median;
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
@@ -73,9 +74,9 @@ impl Report {
         }
         for key in tr_dict_e.keys().sorted() {
             let mut tr = TestReport::new(key);
-            tr.energy = self.median(tr_dict_e[key].clone());
-            tr.transfer = self.median(tr_dict_t[key].clone()) as u64;
-            tr.storage = self.median(tr_dict_s[key].clone()) as u64;
+            tr.energy = median(tr_dict_e[key].clone().into_iter()).unwrap();
+            tr.transfer = median(tr_dict_t[key].clone().into_iter()).unwrap() as u64;
+            tr.storage = median(tr_dict_s[key].clone().into_iter()).unwrap() as u64;
 
             self.total.push(tr);
         }
