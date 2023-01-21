@@ -20,6 +20,7 @@ rtshark = "2.3.1"
 cgroups-rs = "0.2.11"
 sysinfo = "0.3.19"
 inotify = "0.10"
+streaming-stats = "0.2.3"
 
 [dev-dependencies]
 rouille = "3.5.0"
