@@ -7,6 +7,7 @@ use rtshark::{RTShark, RTSharkBuilder};
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 use std::str::FromStr;
+use systemctl;
 
 use super::service::{Service, ServicesLink};
 use super::system_call::SystemCall;
@@ -26,13 +27,12 @@ pub trait ETSComponent {
 
 // ===
 
+const VJOULE_SERVICE_NAME: &str = "vjoule_service";
+
 pub struct EComponent {
     values: Vec<f64>,
     services: Weak<RefCell<Vec<Service>>>,
-    start_sensor: SystemCall,
-    stop_sensor: SystemCall,
-    start_formula: SystemCall,
-    stop_formula: SystemCall,
+    vjoule_need_stop: bool,
 }
 
 impl ETSComponent for EComponent {
@@ -40,33 +40,33 @@ impl ETSComponent for EComponent {
         self.values.iter().sum()
     }
     fn before_campaign(&mut self) {
-        if self.start_sensor.execute().is_err() {
-            eprintln!("Can't start vjoule sensor service");
+        if !systemctl::is_active(VJOULE_SERVICE_NAME).unwrap() {
+            self.vjoule_need_stop = true;
+            systemctl::restart(VJOULE_SERVICE_NAME).unwrap();
+            // TODO better implementation need to wait service started to inotify results/cpu
+            std::thread::sleep(std::time::Duration::from_millis(1000));
+            if !systemctl::is_active(VJOULE_SERVICE_NAME).unwrap() {
+                panic!("Can't start vjoule_service");
+            }
         }
-        self.wait_sensor_signal();
-        if self.start_formula.execute().is_err() {
-            eprintln!("Can't start vjoule formula service");
-        }
-        self.wait_formula_signal();
+        self.wait_vjoule_signal();
     }
     fn after_campaign(&mut self) {
-        if self.stop_formula.execute().is_err() {
-            eprintln!("Can't stop vjoule formula service");
-        }
-        if self.stop_sensor.execute().is_err() {
-            eprintln!("Can't stop vjoule sensor service");
+        if self.vjoule_need_stop {
+            systemctl::stop(VJOULE_SERVICE_NAME).unwrap();
         }
     }
     fn before_test(&mut self) {
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
         self.values.resize(services.len(), 0.0);
-        self.wait_formula_signal();
+        self.wait_vjoule_signal();
         let mut i = 0;
         for s in &*services {
             if let Some(pn) = &s.process_name {
+                println!("/etc/vjoule/results/controlled.slice/{}/cpu", pn);
                 let cpu_s = std::fs::read_to_string(format!(
-                    "/etc/vjoule/simple_formula/controlled.slice/{}/package",
+                    "/etc/vjoule/results/controlled.slice/{}/cpu",
                     pn
                 ))
                 .unwrap();
@@ -78,12 +78,12 @@ impl ETSComponent for EComponent {
     fn after_test(&mut self) {
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
-        self.wait_formula_signal();
+        self.wait_vjoule_signal();
         let mut i = 0;
         for s in &*services {
             if let Some(pn) = &s.process_name {
                 let cpu_s = std::fs::read_to_string(format!(
-                    "/etc/vjoule/simple_formula/controlled.slice/{}/package",
+                    "/etc/vjoule/results/controlled.slice/{}/cpu",
                     pn
                 ))
                 .unwrap();
@@ -96,38 +96,24 @@ impl ETSComponent for EComponent {
 
 impl EComponent {
     pub fn new(services: &ServicesLink) -> Self {
+        if !systemctl::exists(VJOULE_SERVICE_NAME).unwrap() {
+            panic!("EComponent require installation of vjoule");
+        }
+
         Self {
             values: vec![0.0],
             services: Rc::<RefCell<Vec<Service>>>::downgrade(services),
-            start_sensor: SystemCall::new("systemctl restart vjoule_sensor.service"),
-            stop_sensor: SystemCall::new("systemctl stop vjoule_sensor.service"),
-            start_formula: SystemCall::new("systemctl restart vjoule_simple_formula.service"),
-            stop_formula: SystemCall::new("systemctl stop vjoule_simple_formula.service"),
+            vjoule_need_stop: false,
         }
     }
     pub fn to_joules(&self) -> f64 {
         return self.value();
     }
-    fn wait_formula_signal(&self) {
+    fn wait_vjoule_signal(&self) {
         let mut inotify = Inotify::init().expect("Error while initializing inotify instance");
 
         inotify
-            .add_watch(
-                "/etc/vjoule/simple_formula/formula.signal",
-                WatchMask::MODIFY,
-            )
-            .expect("Failed to add watch");
-
-        let mut buffer = [0; 1024];
-        inotify
-            .read_events_blocking(&mut buffer)
-            .expect("Error while reading events");
-    }
-    fn wait_sensor_signal(&self) {
-        let mut inotify = Inotify::init().expect("Error while initializing inotify instance");
-
-        inotify
-            .add_watch("/etc/vjoule/sensor/port", WatchMask::MODIFY)
+            .add_watch("/etc/vjoule/results/cpu", WatchMask::MODIFY)
             .expect("Failed to add watch");
 
         let mut buffer = [0; 1024];
