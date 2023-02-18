@@ -20,7 +20,7 @@ impl SystemCall {
         for i in &args {
             command.arg(i);
         }
-        Self { command: command }
+        Self { command }
     }
 
     pub fn path(&self) -> String {
@@ -37,10 +37,8 @@ impl SystemCall {
         let mut ret: Vec<String> = Vec::new();
 
         for i in &args {
-            let s = i.to_str().map(|s| s.to_string());
-            match s {
-                Some(s) => ret.push(s),
-                None => (),
+            if let Some(s) = i.to_str().map(|s| s.to_string()) {
+                ret.push(s);
             }
         }
         ret

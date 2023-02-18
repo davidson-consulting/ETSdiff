@@ -59,14 +59,14 @@ impl Service {
         if let Some(ref pname) = self.process_name {
             let cg = Cgroup::new(
                 cgroups_rs::hierarchies::auto(),
-                format!("controlled.slice/{}", pname),
+                format!("controlled.slice/{pname}"),
             );
 
             let mut s = System::new();
 
             for _i in 0..10 {
                 let process_list = s.get_process_by_name(pname);
-                if process_list.len() > 0 {
+                if !process_list.is_empty() {
                     for process in process_list {
                         cg.add_task(CgroupPid::from(process.pid as u64)).unwrap();
                     }

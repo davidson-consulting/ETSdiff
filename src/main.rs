@@ -47,20 +47,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let exec_path = env::current_dir().unwrap();
         let path = Path::new(config).parent().unwrap();
-        assert!(env::set_current_dir(&path).is_ok());
+        assert!(env::set_current_dir(path).is_ok());
 
         let yalm_config = std::fs::read_to_string(config).expect("could not read config file");
 
         let mut etsd = ETSdiff::new();
         YAMLConfigReader::read(&yalm_config, &mut etsd);
 
-        match etsd.execute() {
-            Err(e) => {
-                eprintln!("Error while executing etsdiff...");
-                eprintln!("{:?}", e);
-                std::process::exit(1);
-            }
-            _ => (),
+        if let Err(e) = etsd.execute() {
+            eprintln!("Error while executing etsdiff...");
+            eprintln!("{e:?}");
+            std::process::exit(1);
         }
 
         println!("\n=====\n");

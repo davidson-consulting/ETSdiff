@@ -10,7 +10,6 @@ use std::str::FromStr;
 use systemctl;
 
 use super::service::{Service, ServicesLink};
-use super::system_call::SystemCall;
 
 pub trait ETSComponent {
     fn min_iteration(&self) -> i32 {
@@ -64,10 +63,8 @@ impl ETSComponent for EComponent {
         let mut i = 0;
         for s in &*services {
             if let Some(pn) = &s.process_name {
-                println!("/etc/vjoule/results/controlled.slice/{}/cpu", pn);
                 let cpu_s = std::fs::read_to_string(format!(
-                    "/etc/vjoule/results/controlled.slice/{}/cpu",
-                    pn
+                    "/etc/vjoule/results/controlled.slice/{pn}/cpu"
                 ))
                 .unwrap();
                 self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap();
@@ -83,8 +80,7 @@ impl ETSComponent for EComponent {
         for s in &*services {
             if let Some(pn) = &s.process_name {
                 let cpu_s = std::fs::read_to_string(format!(
-                    "/etc/vjoule/results/controlled.slice/{}/cpu",
-                    pn
+                    "/etc/vjoule/results/controlled.slice/{pn}/cpu"
                 ))
                 .unwrap();
                 self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap() - self.values[i];
@@ -107,7 +103,7 @@ impl EComponent {
         }
     }
     pub fn to_joules(&self) -> f64 {
-        return self.value();
+        self.value()
     }
     fn wait_vjoule_signal(&self) {
         let mut inotify = Inotify::init().expect("Error while initializing inotify instance");
@@ -148,14 +144,14 @@ impl ETSComponent for TComponent {
         let services = services_rc.borrow();
         for s in &*services {
             for p in &s.ports {
-                if filter.len() > 0 {
-                    filter = format!("{} or port {}", filter, p);
+                if !filter.is_empty() {
+                    filter = format!("{filter} or port {p}");
                 } else {
-                    filter = format!("port {}", p);
+                    filter = format!("port {p}");
                 }
             }
         }
-        filter = format!("host 127.0.0.1 and ({})", filter);
+        filter = format!("host 127.0.0.1 and ({filter})");
 
         let builder = RTSharkBuilder::builder()
             .input_path("any")
@@ -166,7 +162,6 @@ impl ETSComponent for TComponent {
         match builder.spawn() {
             Err(err) => {
                 eprintln!("Error running tshark writter: {err}");
-                return;
             }
             Ok(rtshark) => {
                 self.rtshark = Some(rtshark);
