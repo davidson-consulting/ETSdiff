@@ -63,10 +63,9 @@ impl ETSComponent for EComponent {
         let mut i = 0;
         for s in &*services {
             if let Some(pn) = &s.process_name {
-                let cpu_s = std::fs::read_to_string(format!(
-                    "/etc/vjoule/results/controlled.slice/{pn}/cpu"
-                ))
-                .unwrap();
+                let cpu_s =
+                    std::fs::read_to_string(format!("/etc/vjoule/results/etsdiff.slice/{pn}/cpu"))
+                        .unwrap();
                 self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap();
                 i += 1;
             }
@@ -79,10 +78,9 @@ impl ETSComponent for EComponent {
         let mut i = 0;
         for s in &*services {
             if let Some(pn) = &s.process_name {
-                let cpu_s = std::fs::read_to_string(format!(
-                    "/etc/vjoule/results/controlled.slice/{pn}/cpu"
-                ))
-                .unwrap();
+                let cpu_s =
+                    std::fs::read_to_string(format!("/etc/vjoule/results/etsdiff.slice/{pn}/cpu"))
+                        .unwrap();
                 self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap() - self.values[i];
                 i += 1;
             }
