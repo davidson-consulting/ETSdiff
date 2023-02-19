@@ -125,12 +125,10 @@ impl ETSdiff {
         for s in &mut *services {
             if s.prepare.is_none() {
                 println!("  Service {} don't have prepare method", s.name);
+            } else if s.prepare().is_err() {
+                eprintln!("  Error when preparing service {}", s.name);
             } else {
-                if s.prepare().is_err() {
-                    eprintln!("  Error when preparing service {}", s.name);
-                } else {
-                    println!("  Service {} prepare()", s.name);
-                }
+                println!("  Service {} prepare()", s.name);
             }
         }
         println!("--\n");
@@ -141,12 +139,10 @@ impl ETSdiff {
         for s in &mut *services {
             if s.clean.is_none() {
                 println!("      Service {} don't have clean method", s.name);
+            } else if s.clean().is_err() {
+                eprintln!("      Error when cleaning service {}", s.name);
             } else {
-                if s.clean().is_err() {
-                    eprintln!("      Error when cleaning service {}", s.name);
-                } else {
-                    println!("      Service {} clean()", s.name);
-                }
+                println!("      Service {} clean()", s.name);
             }
         }
         println!("--\n");
@@ -157,12 +153,10 @@ impl ETSdiff {
         for s in &mut *services {
             if s.release.is_none() {
                 println!("  Service {} don't have release method", s.name);
+            } else if s.release().is_err() {
+                eprintln!("  Error when releasing service {}", s.name);
             } else {
-                if s.release().is_err() {
-                    eprintln!("  Error when releasing service {}", s.name);
-                } else {
-                    println!("  Service {} release()", s.name);
-                }
+                println!("  Service {} release()", s.name);
             }
         }
         println!("--\n");
@@ -172,7 +166,7 @@ impl ETSdiff {
         println!("Nb tests: {:?}", self.tests.len());
 
         let tests_order = self.get_ordered_tests_list();
-        println!("Ordered test: {:?}", tests_order);
+        println!("Ordered test: {tests_order:?}");
         println!("--\n");
 
         self.prepare_etscomponents();
@@ -269,6 +263,12 @@ impl ETSdiff {
         self.report.compute_total();
 
         Ok(())
+    }
+}
+
+impl Default for ETSdiff {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

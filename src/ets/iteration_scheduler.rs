@@ -20,9 +20,7 @@ pub struct StageredScheduler {
 
 impl StageredScheduler {
     pub fn new(nb_iteration: u32) -> Self {
-        Self {
-            nb_iteration: nb_iteration,
-        }
+        Self { nb_iteration }
     }
 }
 

@@ -59,21 +59,19 @@ impl Service {
         if let Some(ref pname) = self.process_name {
             let cg = Cgroup::new(
                 cgroups_rs::hierarchies::auto(),
-                format!("controlled.slice/{}", pname),
+                format!("etsdiff.slice/{pname}"),
             );
 
-            let mut s = System::new();
-
-            for _i in 0..10 {
+            for _i in 0..60 {
+                let s = System::new();
                 let process_list = s.get_process_by_name(pname);
-                if process_list.len() > 0 {
+                if !process_list.is_empty() {
                     for process in process_list {
                         cg.add_task(CgroupPid::from(process.pid as u64)).unwrap();
                     }
                     break;
                 }
                 std::thread::sleep(std::time::Duration::from_millis(500));
-                s.refresh_processes();
             }
 
             self.cgroup = Some(cg);
@@ -212,7 +210,7 @@ mod tests {
     #[test]
     #[cfg(not(tarpaulin))]
     fn service_cgroups() {
-        let test_path = Path::new("/sys/fs/cgroup/controlled.slice/cargo");
+        let test_path = Path::new("/sys/fs/cgroup/etsdiff.slice/cargo");
 
         let mut s = Service::new("Test Service");
         s.set_process_name("cargo"); // Assuming test with run with cargo

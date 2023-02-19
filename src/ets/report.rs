@@ -74,6 +74,12 @@ impl Report {
     }
 }
 
+impl Default for Report {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 // -----------------------------------------------------------------------------
 
 #[cfg(test)]

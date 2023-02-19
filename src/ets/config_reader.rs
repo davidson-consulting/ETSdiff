@@ -25,7 +25,7 @@ impl<'a> ConfigReader for YAMLConfigReader<'a> {
     fn read(config: &str, etsd: &mut ETSdiff) {
         let mut cr = YAMLConfigReader {
             root_yaml: &YamlLoader::load_from_str(config).unwrap()[0],
-            etsd: etsd,
+            etsd,
         };
 
         if !cr.root_yaml["Scheduler"].is_badvalue() {
@@ -86,13 +86,11 @@ impl<'a> YAMLConfigReader<'a> {
     }
 
     fn read_test(&mut self, yaml_test: &Yaml) {
-        if !yaml_test["type"].is_badvalue() {
-            if yaml_test["type"].as_str().unwrap() == "SystemCall" {
-                self.etsd.tests.push(Box::new(SystemCallTest::new(
-                    yaml_test["name"].as_str().unwrap(),
-                    yaml_test["command_line"].as_str().unwrap(),
-                )));
-            }
+        if !yaml_test["type"].is_badvalue() && yaml_test["type"].as_str().unwrap() == "SystemCall" {
+            self.etsd.tests.push(Box::new(SystemCallTest::new(
+                yaml_test["name"].as_str().unwrap(),
+                yaml_test["command_line"].as_str().unwrap(),
+            )));
         }
 
         // TODO: Error report test without type
