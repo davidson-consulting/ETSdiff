@@ -87,10 +87,17 @@ impl<'a> YAMLConfigReader<'a> {
 
     fn read_test(&mut self, yaml_test: &Yaml) {
         if !yaml_test["type"].is_badvalue() && yaml_test["type"].as_str().unwrap() == "SystemCall" {
-            self.etsd.tests.push(Box::new(SystemCallTest::new(
+            let mut test = SystemCallTest::new(
                 yaml_test["name"].as_str().unwrap(),
                 yaml_test["command_line"].as_str().unwrap(),
-            )));
+            );
+
+            if !yaml_test["services_names"].is_badvalue() {
+                for sn in yaml_test["services_names"].as_vec().unwrap() {
+                    test.add_service_name(sn.as_str().unwrap());
+                }
+            }
+            self.etsd.tests.push(Box::new(test));
         }
 
         // TODO: Error report test without type
@@ -138,14 +145,23 @@ Services:
     name: \"Service 2\"
     process_name: \"pns2\"
     clean: \"ls -a\"
+  -
+    name: \"Service 3\"
+    process_name: \"pns3\"
+    clean: \"ls -l\"
 Tests:
   -
     type: SystemCall
     name: \"Test 1\"
+    services_names:
+      - \"Service 1\"
+      - \"Service 2\"
     command_line: \"/bin/ls -a -l\"
   -
     type: SystemCall
     name: \"Test 2\"
+    services_names:
+      - \"Service 3\"
     command_line: ls
 ";
 
@@ -156,7 +172,7 @@ Tests:
         YAMLConfigReader::read(YAML_TEST, &mut etsd);
 
         let services = etsd.services.borrow();
-        assert_eq!(2, services.len());
+        assert_eq!(3, services.len());
 
         // 1st service
         let s1 = &services[0];
@@ -203,6 +219,26 @@ Tests:
         assert!(s2.release.is_none());
 
         assert_eq!(0, s2.storage_paths.len());
+
+        // 3rd service
+        let s3 = &services[2];
+        assert_eq!("Service 3", s3.name);
+
+        assert!(s3.process_name.is_some());
+        assert_eq!("pns3", s3.process_name.as_ref().unwrap());
+
+        assert_eq!(0, s3.ports.len());
+
+        assert!(s3.prepare.is_none());
+
+        assert!(s3.clean.is_some());
+        let clean = s3.clean.as_ref().unwrap();
+        assert_eq!(clean.path(), "ls");
+        assert_eq!(clean.arguments(), ["-l"]);
+
+        assert!(s3.release.is_none());
+
+        assert_eq!(0, s3.storage_paths.len());
     }
 
     #[test]
@@ -215,10 +251,29 @@ Tests:
 
         // 1st test
         assert_eq!("Test 1", etsd.tests[0].name());
-        assert!(!&etsd.tests[0].run().is_err()); // TODO: how to pass Test -> to SystemCallTest ... ie object casting ?
+        assert_eq!(2, etsd.tests[0].services_names().len());
+        let mut i = 0;
+        for service_name in etsd.tests[0].services_names().iter() {
+            match i {
+                0 => assert_eq!(service_name, "Service 1"),
+                1 => assert_eq!(service_name, "Service 2"),
+                _ => panic!("Unexpected service name"),
+            }
+            i += 1;
+        }
+        assert!(!&etsd.tests[0].run().is_err());
 
         // 2nd test
         assert_eq!("Test 2", etsd.tests[1].name());
+        assert_eq!(1, etsd.tests[1].services_names().len());
+        let mut i = 0;
+        for service_name in etsd.tests[1].services_names().iter() {
+            match i {
+                0 => assert_eq!(service_name, "Service 3"),
+                _ => panic!("Unexpected service name"),
+            }
+            i += 1;
+        }
         assert!(!&etsd.tests[1].run().is_err());
     }
 

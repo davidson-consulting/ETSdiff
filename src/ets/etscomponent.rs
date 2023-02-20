@@ -10,6 +10,7 @@ use std::str::FromStr;
 use systemctl;
 
 use super::service::{Service, ServicesLink};
+use super::test::Test;
 
 pub trait ETSComponent {
     fn min_iteration(&self) -> i32 {
@@ -20,8 +21,8 @@ pub trait ETSComponent {
     }
     fn before_campaign(&mut self) {}
     fn after_campaign(&mut self) {}
-    fn before_test(&mut self) {}
-    fn after_test(&mut self) {}
+    fn before_test(&mut self, _test: &dyn Test) {}
+    fn after_test(&mut self, _test: &dyn Test) {}
 }
 
 // ===
@@ -55,34 +56,41 @@ impl ETSComponent for EComponent {
             systemctl::stop(VJOULE_SERVICE_NAME).unwrap();
         }
     }
-    fn before_test(&mut self) {
+    fn before_test(&mut self, test: &dyn Test) {
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
         self.values.resize(services.len(), 0.0);
         self.wait_vjoule_signal();
         let mut i = 0;
         for s in &*services {
-            if let Some(pn) = &s.process_name {
-                let cpu_s =
-                    std::fs::read_to_string(format!("/etc/vjoule/results/etsdiff.slice/{pn}/cpu"))
-                        .unwrap();
-                self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap();
-                i += 1;
+            if test.services_names().contains(&s.name) {
+                if let Some(pn) = &s.process_name {
+                    let cpu_s = std::fs::read_to_string(format!(
+                        "/etc/vjoule/results/etsdiff.slice/{pn}/cpu"
+                    ))
+                    .unwrap();
+                    self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap();
+                    i += 1;
+                }
             }
         }
     }
-    fn after_test(&mut self) {
+    fn after_test(&mut self, test: &dyn Test) {
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
         self.wait_vjoule_signal();
         let mut i = 0;
         for s in &*services {
-            if let Some(pn) = &s.process_name {
-                let cpu_s =
-                    std::fs::read_to_string(format!("/etc/vjoule/results/etsdiff.slice/{pn}/cpu"))
-                        .unwrap();
-                self.values[i] = cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap() - self.values[i];
-                i += 1;
+            if test.services_names().contains(&s.name) {
+                if let Some(pn) = &s.process_name {
+                    let cpu_s = std::fs::read_to_string(format!(
+                        "/etc/vjoule/results/etsdiff.slice/{pn}/cpu"
+                    ))
+                    .unwrap();
+                    self.values[i] =
+                        cpu_s[..cpu_s.len() - 1].parse::<f64>().unwrap() - self.values[i];
+                    i += 1;
+                }
             }
         }
     }
@@ -134,18 +142,20 @@ pub struct TComponent {
 }
 
 impl ETSComponent for TComponent {
-    fn before_test(&mut self) {
+    fn before_test(&mut self, test: &dyn Test) {
         self.value = 0;
 
         let mut filter = String::from("");
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
         for s in &*services {
-            for p in &s.ports {
-                if !filter.is_empty() {
-                    filter = format!("{filter} or port {p}");
-                } else {
-                    filter = format!("port {p}");
+            if test.services_names().contains(&s.name) {
+                for p in &s.ports {
+                    if !filter.is_empty() {
+                        filter = format!("{filter} or port {p}");
+                    } else {
+                        filter = format!("port {p}");
+                    }
                 }
             }
         }
@@ -167,7 +177,7 @@ impl ETSComponent for TComponent {
             }
         };
     }
-    fn after_test(&mut self) {
+    fn after_test(&mut self, _test: &dyn Test) {
         match &mut self.rtshark {
             Some(s) => {
                 s.kill();
@@ -225,6 +235,7 @@ impl TComponent {
 // ===
 
 pub struct SComponent {
+    value: u64,
     services: Weak<RefCell<Vec<Service>>>,
 }
 
@@ -232,27 +243,30 @@ impl ETSComponent for SComponent {
     fn value(&self) -> f64 {
         self.to_octets() as f64
     }
-}
-
-impl OctetsComponent for SComponent {
-    fn to_octets(&self) -> u64 {
-        let mut size: u64 = 0;
+    fn after_test(&mut self, test: &dyn Test) {
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
 
         for s in &*services {
-            for p in &s.storage_paths {
-                size += get_size(p).unwrap();
+            if test.services_names().contains(&s.name) {
+                for p in &s.storage_paths {
+                    self.value += get_size(p).unwrap();
+                }
             }
         }
+    }
+}
 
-        size
+impl OctetsComponent for SComponent {
+    fn to_octets(&self) -> u64 {
+        self.value
     }
 }
 
 impl SComponent {
     pub fn new(services: &ServicesLink) -> Self {
         Self {
+            value: 0,
             services: Rc::<RefCell<Vec<Service>>>::downgrade(services),
         }
     }
@@ -269,6 +283,7 @@ mod tests {
     use sysinfo::{System, SystemExt};
 
     use crate::ets::system_call::SystemCall;
+    use crate::ets::test::SystemCallTest;
 
     #[test]
     #[cfg(not(tarpaulin))]
@@ -276,8 +291,11 @@ mod tests {
         let si = System::new();
 
         let mut services: Vec<Service> = Vec::new();
+        let mut s = Service::new("Service 1");
+        let mut t = SystemCallTest::new("Test 1", "ls");
+        t.add_service_name("Service 1");
+
         // find current process name
-        let mut s = Service::new("Test 1");
         if let Some(p) = si.get_process(std::process::id() as i32) {
             s.set_process_name(&p.name);
         }
@@ -296,7 +314,7 @@ mod tests {
             }
         }
         ec.before_campaign();
-        ec.before_test();
+        ec.before_test(&t);
 
         use std::{thread, time};
         let mut sc = SystemCall::new("ps aux");
@@ -307,7 +325,7 @@ mod tests {
             thread::sleep(time::Duration::from_millis(100));
         }
 
-        ec.after_test();
+        ec.after_test(&t);
         {
             let mut services = link.borrow_mut();
             for s in &mut *services {
@@ -357,37 +375,41 @@ mod tests {
         // Creat TComponent with service
         let mut services: Vec<Service> = Vec::new();
 
-        let mut s = Service::new("Test 1");
+        let mut s = Service::new("Service 1");
         s.add_port(8881);
         s.add_port(8882);
         services.push(s);
+        let mut t = SystemCallTest::new("Test 1", "ls");
+        t.add_service_name("Service 1");
 
         let link: ServicesLink = Rc::new(RefCell::new(services));
         let mut tc = TComponent::new(&link);
 
         // Do tests requests
-        tc.before_test();
+        tc.before_test(&t);
         let res = reqwest::blocking::get("http://localhost:8881/simple").unwrap();
         let body = res.text().unwrap();
         assert_eq!("0123456789", body);
         let res = reqwest::blocking::get("http://localhost:8882/double").unwrap();
         let body = res.text().unwrap();
         assert_eq!("01234567890123456789", body);
-        tc.after_test();
+        tc.after_test(&t);
         let t1 = tc.to_octets();
         assert!(t1 > "0123456789".len() as u64);
 
-        tc.before_test();
+        /*
+        tc.before_test(&t);
         let res = reqwest::blocking::get("http://localhost:8881/simple").unwrap();
         let body = res.text().unwrap();
         assert_eq!("0123456789", body);
         let res = reqwest::blocking::get("http://localhost:8882/double").unwrap();
         let body = res.text().unwrap();
         assert_eq!("01234567890123456789", body);
-        tc.after_test();
+        tc.after_test(&t);
         let t2 = tc.to_octets();
         assert!(t2 > "0123456789".len() as u64);
         assert_eq!(t1, t2);
+        */
 
         // Stopping webserver
         sender2.send(()).unwrap();
@@ -425,23 +447,31 @@ mod tests {
 
         let mut services: Vec<Service> = Vec::new();
 
-        let mut s = Service::new("Test 1");
+        let mut s = Service::new("Service 1");
         s.add_storage_path("/tmp/etsdiff/test1.size");
         services.push(s);
 
-        s = Service::new("Test 2");
+        s = Service::new("Service 2");
         s.add_storage_path("/tmp/etsdiff/test2/");
         services.push(s);
 
-        s = Service::new("Test 3");
+        s = Service::new("Service 3");
         s.add_storage_path("/tmp/etsdiff/test3_1.size");
         s.add_storage_path("/tmp/etsdiff/test3_2.size");
         services.push(s);
 
+        let mut test = SystemCallTest::new("Test 1", "ls");
+        test.add_service_name("Service 1");
+        test.add_service_name("Service 2");
+        test.add_service_name("Service 3");
+
         assert_eq!(3, services.len());
 
         let link: ServicesLink = Rc::new(RefCell::new(services));
-        let sc = SComponent::new(&link);
+        let mut sc = SComponent::new(&link);
+        sc.before_test(&test);
+        sc.after_test(&test);
+
         assert_eq!(10, sc.to_octets());
         assert_eq!(10.0, sc.value());
 

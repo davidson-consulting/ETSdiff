@@ -7,6 +7,7 @@ use super::system_call::SystemCall;
 
 pub trait Test {
     fn name(&self) -> &String;
+    fn services_names(&self) -> &Vec<String>;
     fn run(&mut self) -> Result<(), Box<dyn Error>>;
 }
 
@@ -14,6 +15,7 @@ pub trait Test {
 
 pub struct SystemCallTest {
     name: String,
+    services_names: Vec<String>,
     system_call: SystemCall,
 }
 
@@ -21,14 +23,23 @@ impl SystemCallTest {
     pub fn new(name: &str, commandline: &str) -> Self {
         Self {
             name: name.into(),
+            services_names: vec![],
             system_call: SystemCall::new(commandline),
         }
+    }
+
+    pub fn add_service_name(&mut self, service_name: &str) {
+        self.services_names.push(service_name.into());
     }
 }
 
 impl Test for SystemCallTest {
     fn name(&self) -> &String {
         &self.name
+    }
+
+    fn services_names(&self) -> &Vec<String> {
+        &self.services_names
     }
 
     fn run(&mut self) -> Result<(), Box<dyn Error>> {
@@ -50,7 +61,27 @@ mod tests {
     fn system_call_test_creation_with_command_line() {
         let sct = SystemCallTest::new("TestName", "ls");
         assert_eq!(sct.name, "TestName");
+        assert!(sct.services_names.is_empty());
         assert_eq!(sct.system_call.path(), "ls");
+    }
+
+    #[test]
+    fn system_call_test_add_service_name() {
+        let mut sct = SystemCallTest::new("TestName", "ls");
+        assert!(sct.services_names.is_empty());
+        sct.add_service_name("sn1");
+        assert_eq!(sct.services_names.len(), 1);
+        sct.add_service_name("sn2");
+        assert_eq!(sct.services_names.len(), 2);
+        let mut i = 0;
+        for sn in sct.services_names.iter() {
+            match i {
+                0 => assert_eq!(sn, "sn1"),
+                1 => assert_eq!(sn, "sn2"),
+                _ => panic!("Uncovered service name"),
+            }
+            i += 1;
+        }
     }
 
     #[test]
