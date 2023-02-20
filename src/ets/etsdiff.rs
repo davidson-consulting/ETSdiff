@@ -29,7 +29,6 @@ impl ETSdiff {
             e_component: None,
             s_component: None,
             t_component: None,
-            //scheduler: StageredScheduler::new(2),
             scheduler: None,
             report: Report::new(),
         };
@@ -119,48 +118,56 @@ impl ETSdiff {
         }
     }
 
-    fn prepare_services(&mut self) {
+    /*
+    fn prepare_services(&mut self, test: &dyn Test) {
         let mut services = self.services.borrow_mut();
         println!("Prepare {} services...", services.len());
         for s in &mut *services {
-            if s.prepare.is_none() {
-                println!("  Service {} don't have prepare method", s.name);
-            } else if s.prepare().is_err() {
-                eprintln!("  Error when preparing service {}", s.name);
-            } else {
-                println!("  Service {} prepare()", s.name);
+            if test.services_names().contains(&s.name) {
+                if s.prepare.is_none() {
+                    println!("  Service {} don't have prepare method", s.name);
+                } else if s.prepare().is_err() {
+                    eprintln!("  Error when preparing service {}", s.name);
+                } else {
+                    println!("  Service {} prepare()", s.name);
+                }
             }
         }
         println!("--\n");
     }
-    fn clean_services(&mut self) {
+    fn clean_services(&mut self, test: &dyn Test) {
         let mut services = self.services.borrow_mut();
         println!("    Clean {} services...", services.len());
         for s in &mut *services {
-            if s.clean.is_none() {
-                println!("      Service {} don't have clean method", s.name);
-            } else if s.clean().is_err() {
-                eprintln!("      Error when cleaning service {}", s.name);
-            } else {
-                println!("      Service {} clean()", s.name);
+            if test.services_names().contains(&s.name) {
+                if s.clean.is_none() {
+                    println!("      Service {} don't have clean method", s.name);
+                } else if s.clean().is_err() {
+                    eprintln!("      Error when cleaning service {}", s.name);
+                } else {
+                    println!("      Service {} clean()", s.name);
+                }
             }
         }
         println!("--\n");
     }
-    fn release_services(&mut self) {
+    fn release_services(&mut self, test: &dyn Test) {
         let mut services = self.services.borrow_mut();
         println!("Release {} services...", services.len());
         for s in &mut *services {
-            if s.release.is_none() {
-                println!("  Service {} don't have release method", s.name);
-            } else if s.release().is_err() {
-                eprintln!("  Error when releasing service {}", s.name);
-            } else {
-                println!("  Service {} release()", s.name);
+            if test.services_names().contains(&s.name) {
+                if s.release.is_none() {
+                    println!("  Service {} don't have release method", s.name);
+                } else if s.release().is_err() {
+                    eprintln!("  Error when releasing service {}", s.name);
+                } else {
+                    println!("  Service {} release()", s.name);
+                }
             }
         }
         println!("--\n");
     }
+    */
 
     pub fn execute(&mut self) -> Result<(), Box<dyn Error>> {
         println!("Nb tests: {:?}", self.tests.len());
@@ -170,40 +177,55 @@ impl ETSdiff {
         println!("--\n");
 
         self.prepare_etscomponents();
-        self.prepare_services();
+        println!("--\n");
 
         println!("Iterations:");
         for itest in tests_order {
-            self.clean_services();
-
             let test = &mut self.tests[itest as usize];
             let mut tr = TestReport::new(test.name());
-            println!("  test {}", test.name());
+            println!("  [TEST: {}]", test.name());
+
+            {
+                // self.prepare_services(test.as_ref()); TODO: undersant how to deal with borrow *self more than once
+                let mut services = self.services.borrow_mut();
+                println!("    Prepare services...");
+                for s in &mut *services {
+                    if test.services_names().contains(&s.name) {
+                        if s.prepare.is_none() {
+                            println!("      Service {} don't have prepare method", s.name);
+                        } else if s.prepare().is_err() {
+                            eprintln!("      Error when preparing service {}", s.name);
+                        } else {
+                            println!("      Service {} prepare()", s.name);
+                        }
+                    }
+                }
+            }
 
             println!("    Starting ETSComponents...");
             match self.t_component {
                 None => println!("      No TComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting TComponent");
-                    c.before_test();
+                    c.before_test(test.as_ref());
                 }
             }
             match self.s_component {
                 None => println!("      No SComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting SComponent");
-                    c.before_test();
+                    c.before_test(test.as_ref());
                 }
             }
             match self.e_component {
                 None => println!("      No EComponent to start"),
                 Some(ref mut c) => {
                     println!("      Starting EComponent");
-                    c.before_test();
+                    c.before_test(test.as_ref());
                 }
             }
 
-            println!("    Running test...");
+            println!("    => Running test...");
             test.run()?;
 
             println!("    Stoping ETSComponents...");
@@ -211,21 +233,21 @@ impl ETSdiff {
                 None => println!("      No EComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping EComponent");
-                    c.after_test();
+                    c.after_test(test.as_ref());
                 }
             }
             match self.t_component {
                 None => println!("      No TComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping TComponent");
-                    c.after_test();
+                    c.after_test(test.as_ref());
                 }
             }
             match self.s_component {
                 None => println!("      No SComponent to stop"),
                 Some(ref mut c) => {
                     println!("      Stoping SComponent");
-                    c.after_test();
+                    c.after_test(test.as_ref());
                 }
             }
 
@@ -252,10 +274,35 @@ impl ETSdiff {
                 }
             }
             self.report.add_test_report(tr);
+
+            {
+                // self.clean_services(test.as_ref()); TODO: undersant how to deal with borrow *self more than once
+                // self.release_services(test.as_ref()); TODO: undersant how to deal with borrow *self more than once
+                let mut services = self.services.borrow_mut();
+                println!("    Clean and Release services...");
+                for s in &mut *services {
+                    if test.services_names().contains(&s.name) {
+                        if s.clean.is_none() {
+                            println!("      Service {} don't have clean method", s.name);
+                        } else if s.clean().is_err() {
+                            eprintln!("      Error when cleaning service {}", s.name);
+                        } else {
+                            println!("      Service {} clean()", s.name);
+                        }
+
+                        if s.release.is_none() {
+                            println!("      Service {} don't have release method", s.name);
+                        } else if s.release().is_err() {
+                            eprintln!("      Error when releasing service {}", s.name);
+                        } else {
+                            println!("      Service {} release()", s.name);
+                        }
+                    }
+                }
+            }
         }
         println!("--\n");
 
-        self.release_services();
         self.release_etscomponents();
 
         // report
