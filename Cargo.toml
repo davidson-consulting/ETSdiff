@@ -10,7 +10,6 @@ edition = "2021"
 
 [dependencies]
 simple-error = "0.2"
-yaml-rust = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 itertools = "0.8"
@@ -22,6 +21,7 @@ sysinfo = "0.3.19"
 inotify = "0.10"
 streaming-stats = "0.2.3"
 systemctl = "0.1.9"
+toml = "0.7.2"
 
 [dev-dependencies]
 rouille = "3.5.0"
