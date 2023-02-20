@@ -6,7 +6,6 @@
 
 #[macro_use]
 extern crate simple_error;
-extern crate yaml_rust;
 
 #[cfg(test)]
 #[macro_use]
@@ -19,7 +18,7 @@ use std::path::{Path, PathBuf};
 
 pub mod ets;
 
-use crate::ets::config_reader::{ConfigReader, YAMLConfigReader};
+use crate::ets::config_reader::{ConfigReader, TOMLConfigReader};
 use crate::ets::etsdiff::ETSdiff;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -28,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .author("Twister <twister@davidson.fr>")
         .about("Comparing programs with 3 criterias: Energy, Transfer and Storage")
         .arg(
-            arg!([config] "YAML config file")
+            arg!([config] "TOML config file")
                 .required(true)
                 .value_parser(value_parser!(PathBuf)),
         )
@@ -49,10 +48,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let path = Path::new(config).parent().unwrap();
         assert!(env::set_current_dir(path).is_ok());
 
-        let yalm_config = std::fs::read_to_string(config).expect("could not read config file");
+        let config = std::fs::read_to_string(config).expect("could not read config file");
 
         let mut etsd = ETSdiff::new();
-        YAMLConfigReader::read(&yalm_config, &mut etsd);
+        TOMLConfigReader::read(&config, &mut etsd);
 
         if let Err(e) = etsd.execute() {
             eprintln!("Error while executing etsdiff...");

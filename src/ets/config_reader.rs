@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Davidson <twister@davidson.fr>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-use yaml_rust::yaml::Yaml;
-use yaml_rust::YamlLoader;
+use toml::Table;
 
 use super::etsdiff::ETSdiff;
 use super::iteration_scheduler::SchedulerType;
@@ -15,68 +14,81 @@ pub trait ConfigReader {
 }
 
 // ===
-
-pub struct YAMLConfigReader<'a> {
-    root_yaml: &'a Yaml,
+pub struct TOMLConfigReader<'a> {
+    toml: &'a Table,
     etsd: &'a mut ETSdiff,
 }
 
-impl<'a> ConfigReader for YAMLConfigReader<'a> {
+impl<'a> ConfigReader for TOMLConfigReader<'a> {
     fn read(config: &str, etsd: &mut ETSdiff) {
-        let mut cr = YAMLConfigReader {
-            root_yaml: &YamlLoader::load_from_str(config).unwrap()[0],
+        let mut cr = TOMLConfigReader {
+            toml: &config.parse::<Table>().unwrap(),
             etsd,
         };
 
-        if !cr.root_yaml["Scheduler"].is_badvalue() {
-            cr.read_scheduler(&cr.root_yaml["Scheduler"]);
+        if let Some(table) = cr.toml["Scheduler"].as_table() {
+            cr.read_scheduler(table);
         }
 
-        if !cr.root_yaml["Services"].is_badvalue() {
-            for service in cr.root_yaml["Services"].as_vec().unwrap() {
-                cr.read_service(service);
+        if cr.toml.contains_key("Services") {
+            if let Some(table) = cr.toml["Services"].as_table() {
+                for name in table.keys() {
+                    cr.read_service(name, table[name].as_table().unwrap());
+                }
             }
         }
 
-        if !cr.root_yaml["Tests"].is_badvalue() {
-            for test in cr.root_yaml["Tests"].as_vec().unwrap() {
-                cr.read_test(test);
+        if cr.toml.contains_key("Tests") {
+            if let Some(table) = cr.toml["Tests"].as_table() {
+                for name in table.keys() {
+                    cr.read_test(name, table[name].as_table().unwrap());
+                }
             }
         }
     }
 }
 
-impl<'a> YAMLConfigReader<'a> {
-    fn read_service(&mut self, yaml_service: &Yaml) {
-        let mut s = Service::new(yaml_service["name"].as_str().unwrap()); // TODO: What's if no name provided
+impl<'a> TOMLConfigReader<'a> {
+    fn read_scheduler(&mut self, toml_scheduler: &Table) {
+        if let Some(nb_iteration) = toml_scheduler["nb_iteration"].as_integer() {
+            if let Some(stype) = toml_scheduler["type"].as_str() {
+                if stype == "StageredScheduler" {
+                    self.etsd
+                        .set_scheduler(SchedulerType::StageredScheduler, nb_iteration as u32);
+                }
+            }
+        }
+    }
 
-        if !yaml_service["process_name"].is_badvalue() {
-            s.set_process_name(yaml_service["process_name"].as_str().unwrap());
+    fn read_service(&mut self, name: &str, toml_service: &Table) {
+        let mut s = Service::new(name);
+
+        if toml_service.contains_key("process_name") {
+            s.set_process_name(toml_service["process_name"].as_str().unwrap());
         }
 
-        if !yaml_service["ports"].is_badvalue() {
-            for port in yaml_service["ports"].as_vec().unwrap() {
-                match u32::try_from(port.as_i64().unwrap()) {
-                    Ok(p) => s.add_port(p),
-                    Err(_e) => (), // TODO: Error managment
+        if toml_service.contains_key("ports") {
+            for port in toml_service["ports"].as_array().unwrap() {
+                if let Some(port) = port.as_integer() {
+                    s.add_port(port as u32);
                 }
             }
         }
 
-        if !yaml_service["prepare"].is_badvalue() {
-            s.prepare = Some(SystemCall::new(yaml_service["prepare"].as_str().unwrap()));
+        if toml_service.contains_key("prepare") {
+            s.prepare = Some(SystemCall::new(toml_service["prepare"].as_str().unwrap()));
         }
 
-        if !yaml_service["clean"].is_badvalue() {
-            s.clean = Some(SystemCall::new(yaml_service["clean"].as_str().unwrap()));
+        if toml_service.contains_key("clean") {
+            s.clean = Some(SystemCall::new(toml_service["clean"].as_str().unwrap()));
         }
 
-        if !yaml_service["release"].is_badvalue() {
-            s.release = Some(SystemCall::new(yaml_service["release"].as_str().unwrap()));
+        if toml_service.contains_key("release") {
+            s.release = Some(SystemCall::new(toml_service["release"].as_str().unwrap()));
         }
 
-        if !yaml_service["storage_paths"].is_badvalue() {
-            for path in yaml_service["storage_paths"].as_vec().unwrap() {
+        if toml_service.contains_key("storage_paths") {
+            for path in toml_service["storage_paths"].as_array().unwrap() {
                 s.add_storage_path(path.as_str().unwrap());
             }
         }
@@ -85,15 +97,12 @@ impl<'a> YAMLConfigReader<'a> {
         services.push(s);
     }
 
-    fn read_test(&mut self, yaml_test: &Yaml) {
-        if !yaml_test["type"].is_badvalue() && yaml_test["type"].as_str().unwrap() == "SystemCall" {
-            let mut test = SystemCallTest::new(
-                yaml_test["name"].as_str().unwrap(),
-                yaml_test["command_line"].as_str().unwrap(),
-            );
+    fn read_test(&mut self, name: &str, toml_test: &Table) {
+        if toml_test.contains_key("type") && toml_test["type"].as_str().unwrap() == "SystemCall" {
+            let mut test = SystemCallTest::new(name, toml_test["command_line"].as_str().unwrap());
 
-            if !yaml_test["services_names"].is_badvalue() {
-                for sn in yaml_test["services_names"].as_vec().unwrap() {
+            if toml_test.contains_key("services_names") {
+                for sn in toml_test["services_names"].as_array().unwrap() {
                     test.add_service_name(sn.as_str().unwrap());
                 }
             }
@@ -101,20 +110,6 @@ impl<'a> YAMLConfigReader<'a> {
         }
 
         // TODO: Error report test without type
-    }
-
-    fn read_scheduler(&mut self, yaml_scheduler: &Yaml) {
-        if !yaml_scheduler["type"].is_badvalue() && !yaml_scheduler["nb_iteration"].is_badvalue() {
-            match u32::try_from(yaml_scheduler["nb_iteration"].as_i64().unwrap()) {
-                Ok(nb_iteration) => {
-                    if yaml_scheduler["type"].as_str().unwrap() == "StageredScheduler" {
-                        self.etsd
-                            .set_scheduler(SchedulerType::StageredScheduler, nb_iteration);
-                    }
-                }
-                Err(_e) => (), // TODO: Error managment
-            }
-        }
     }
 }
 
@@ -126,50 +121,47 @@ mod tests {
 
     use super::super::etsdiff::ETSdiff;
 
-    static YAML_TEST: &str = "
-Scheduler:
-  type: \"StageredScheduler\"
-  nb_iteration: 5
-Services:
-  -
-    name: \"Service 1\"
-    ports:
-      - 8080
-      - 4326
-    prepare: \"ls -a -l\"
-    release: ls
-    storage_paths:
-      - /tmp/s1/queue
-      - /tmp/s1/session
-  -
-    name: \"Service 2\"
-    process_name: \"pns2\"
-    clean: \"ls -a\"
-  -
-    name: \"Service 3\"
-    process_name: \"pns3\"
-    clean: \"ls -l\"
-Tests:
-  -
-    type: SystemCall
-    name: \"Test 1\"
-    services_names:
-      - \"Service 1\"
-      - \"Service 2\"
-    command_line: \"/bin/ls -a -l\"
-  -
-    type: SystemCall
-    name: \"Test 2\"
-    services_names:
-      - \"Service 3\"
-    command_line: ls
-";
+    static TOML_TEST: &str = r#"
+[Scheduler]
+type = "StageredScheduler"
+nb_iteration = 5
+
+    
+[Services]
+    
+[Services."Service 1"]
+ports = [ 8_080, 4_326 ]
+prepare = "ls -a -l"
+release = "ls"
+storage_paths = [ "/tmp/s1/queue", "/tmp/s1/session" ]
+
+[Services."Service 2"]
+process_name = "pns2"
+clean = "ls -a"
+
+[Services."Service 3"]
+process_name = "pns3"
+clean = "ls -l"
+
+
+[Tests]
+
+[Tests."Test 1"]
+type = "SystemCall"
+services_names = [ "Service 1", "Service 2" ]
+command_line = "/bin/ls -a -l"
+
+[Tests."Test 2"]
+type = "SystemCall"
+services_names = [ "Service 3" ]
+command_line = "ls"
+    "#;
 
     #[test]
-    fn yaml_config_reader_services() {
+    fn toml_config_reader_services() {
         let mut etsd = ETSdiff::new();
 
-        YAMLConfigReader::read(YAML_TEST, &mut etsd);
+        TOMLConfigReader::read(TOML_TEST, &mut etsd);
 
         let services = etsd.services.borrow();
         assert_eq!(3, services.len());
@@ -242,10 +234,10 @@ Tests:
     }
 
     #[test]
-    fn yaml_config_reader_tests() {
+    fn toml_config_reader_tests() {
         let mut etsd = ETSdiff::new();
 
-        YAMLConfigReader::read(YAML_TEST, &mut etsd);
+        TOMLConfigReader::read(TOML_TEST, &mut etsd);
 
         assert_eq!(2, etsd.tests.len());
 
@@ -278,10 +270,10 @@ Tests:
     }
 
     #[test]
-    fn yaml_config_reader_iteration_scheduler() {
+    fn toml_config_reader_iteration_scheduler() {
         let mut etsd = ETSdiff::new();
 
-        YAMLConfigReader::read(YAML_TEST, &mut etsd);
+        TOMLConfigReader::read(TOML_TEST, &mut etsd);
 
         assert_eq!(5, etsd.scheduler.unwrap().nb_iteration());
     }
