@@ -8,7 +8,7 @@ use super::etsdiff::ETSdiff;
 use super::iteration_scheduler::SchedulerType;
 use super::service::Service;
 use super::system_call::SystemCall;
-use super::test::{SystemCallTest, Test};
+use super::test::SystemCallTest;
 
 pub trait ConfigReader {
     fn read(config: &str, etsd: &mut ETSdiff);
@@ -91,11 +91,9 @@ impl<'a> YAMLConfigReader<'a> {
                 yaml_test["name"].as_str().unwrap(),
                 yaml_test["command_line"].as_str().unwrap(),
             );
-            dbg!(test.name());
 
             if !yaml_test["services_names"].is_badvalue() {
                 for sn in yaml_test["services_names"].as_vec().unwrap() {
-                    dbg!(sn);
                     test.add_service_name(sn.as_str().unwrap());
                 }
             }
