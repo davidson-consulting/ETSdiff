@@ -243,6 +243,9 @@ impl ETSComponent for SComponent {
     fn value(&self) -> f64 {
         self.to_octets() as f64
     }
+    fn before_test(&mut self, _test: &dyn Test) {
+        self.value = 0;
+    }
     fn after_test(&mut self, test: &dyn Test) {
         let services_rc = Weak::upgrade(&self.services).unwrap();
         let services = services_rc.borrow();
@@ -397,7 +400,6 @@ mod tests {
         let t1 = tc.to_octets();
         assert!(t1 > "0123456789".len() as u64);
 
-        /*
         tc.before_test(&t);
         let res = reqwest::blocking::get("http://localhost:8881/simple").unwrap();
         let body = res.text().unwrap();
@@ -409,7 +411,6 @@ mod tests {
         let t2 = tc.to_octets();
         assert!(t2 > "0123456789".len() as u64);
         assert_eq!(t1, t2);
-        */
 
         // Stopping webserver
         sender2.send(()).unwrap();
