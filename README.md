@@ -7,7 +7,19 @@ SPDX-License-Identifier: CC-BY-NC-SA-4.0
 
 # ETSdiff
 
-Analyses consumption of a program with 3 criteria: energy, transfer and storage 
+**ETSdiff** aims at the **differential analysis** of **solutions** producing an **identical result** within the framework of a **complete chain** of web applications.
+
+![Overview](./etsdiff_overview.png)
+
+**To cover the whole chain, ETSdiff uses 3 distinct indicators:**
+* **E**: Energy (in joules) Ex: E1 + E2 + E3
+* **T**: Transfer (in octets) Ex: T1 + T2 + T3 + T4
+* **S**: Storage (in octets) Ex: S1 + S2 + S3
+
+![Results](./etsdiff_total.png)
+
+* The solutions to be compared must guarantee an identical result for the same query and be reproducible.
+* The measurement process must be carried out in a controlled test environment
 
 ## Prerequisite
 
