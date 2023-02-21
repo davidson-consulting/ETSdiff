@@ -29,6 +29,65 @@ cargo build
 cargo run
 ```
 
+### Using (cli help)
+
+```
+ETSDiff 0.1
+Twister <twister@davidson.fr>
+Comparing programs with 3 criterias: Energy, Transfer and Storage
+
+USAGE:
+    etsdiff [OPTIONS] <config>
+
+ARGS:
+    <config>    TOML config file
+
+OPTIONS:
+    -h, --help             Print help information
+    -o, --output <FILE>    YAML output file
+    -V, --version          Print version information
+```
+
+### Configuration file
+
+**As we are in beta stage, we don't provide exhaustive informations about config file.**
+
+But you can see one example [here](https://github.com/davidson-consulting/ETSdiff-Test-Snippets/blob/main/php/sql_index/ets.toml) and check the one used in [test](https://github.com/davidson-consulting/ETSdiff/blob/29dd34fff1740d6ba31e5631cf52d724031656e2/src/ets/config_reader.rs#L124).
+
+### Output
+
+Output consist of one YAML file that contains details for all tests and the total (using median value).
+
+*Overview of a 2 iterations run:*
+```
+details:
+- name: Index
+  energy: 0.09502
+  transfer: 33237
+  storage: 629159923
+- name: NoIndex
+  energy: 11.55157
+  transfer: 33373
+  storage: 373307379
+- name: Index
+  energy: 0.08891999999999999
+  transfer: 33237
+  storage: 629159923
+- name: NoIndex
+  energy: 11.658760000000001
+  transfer: 33373
+  storage: 373307379
+total:
+- name: Index
+  energy: 0.09197
+  transfer: 33237
+  storage: 629159923
+- name: NoIndex
+  energy: 11.605165
+  transfer: 33373
+  storage: 373307379
+```
+
 ## License
 
 This work is licensed under multiple licences. Because keeping this section
