@@ -64,6 +64,8 @@ OPTIONS:
 
 **As we are in beta stage, we don't provide exhaustive informations about config file.**
 
+*At this stage there is no validation of configuration values (planned in [issue 9](https://github.com/davidson-consulting/ETSdiff/issues/9))*
+
 But you can see one example [here](https://github.com/davidson-consulting/ETSdiff-Test-Snippets/blob/main/php/sql_index/ets.toml) and check the one used in [test](https://github.com/davidson-consulting/ETSdiff/blob/29dd34fff1740d6ba31e5631cf52d724031656e2/src/ets/config_reader.rs#L124).
 
 ### Output
