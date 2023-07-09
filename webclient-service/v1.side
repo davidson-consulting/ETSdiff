@@ -1,0 +1,605 @@
+{
+  "id": "83dce5b3-f435-493e-9ef2-c073955baf0b",
+  "version": "2.0",
+  "name": "MyProject",
+  "url": "http://localhost",
+  "tests": [{
+    "id": "51687c50-b62e-4444-938c-729f9f7da783",
+    "name": "Untitled",
+    "commands": [{
+      "id": "1e396e1d-132f-45c4-9359-8ccbfc059c82",
+      "comment": "",
+      "command": "open",
+      "target": "/login",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "66c7db8c-255b-4d1f-ad48-c12ced90e377",
+      "comment": "",
+      "command": "setWindowSize",
+      "target": "1158x1004",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "dd5af799-8d78-4d72-9964-f9990e307857",
+      "comment": "",
+      "command": "click",
+      "target": "id=username",
+      "targets": [
+        ["id=username", "id"],
+        ["name=_username", "name"],
+        ["css=#username", "css:finder"],
+        ["xpath=//input[@id='username']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "568bf8b1-51e8-458e-8279-024f5b0eb028",
+      "comment": "",
+      "command": "type",
+      "target": "id=username",
+      "targets": [
+        ["id=username", "id"],
+        ["name=_username", "name"],
+        ["css=#username", "css:finder"],
+        ["xpath=//input[@id='username']", "xpath:attributes"],
+        ["xpath=//input", "xpath:position"]
+      ],
+      "value": "admin@davidson.fr"
+    }, {
+      "id": "4b25102f-6f9a-481b-b1ce-e9514fb0eadb",
+      "comment": "",
+      "command": "type",
+      "target": "id=password",
+      "targets": [
+        ["id=password", "id"],
+        ["name=_password", "name"],
+        ["css=#password", "css:finder"],
+        ["xpath=//input[@id='password']", "xpath:attributes"],
+        ["xpath=//input[2]", "xpath:position"]
+      ],
+      "value": "*****"
+    }, {
+      "id": "9ac13754-27af-4909-ad70-2b1362b1b82e",
+      "comment": "",
+      "command": "click",
+      "target": "id=_submit",
+      "targets": [
+        ["id=_submit", "id"],
+        ["name=_submit", "name"],
+        ["css=#\\_submit", "css:finder"],
+        ["xpath=//button[@id='_submit']", "xpath:attributes"],
+        ["xpath=//button", "xpath:position"],
+        ["xpath=//button[contains(.,'Log in')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "aa96af09-e612-4ff5-a6bf-4446a8988c38",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "id=back-to-top",
+      "targets": [
+        ["id=back-to-top", "id"],
+        ["css=#back-to-top", "css:finder"],
+        ["xpath=//div[@id='back-to-top']", "xpath:attributes"],
+        ["xpath=//body/a/div", "xpath:position"],
+        ["xpath=//div[contains(.,'Haut de page')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "eaad74f4-8959-49d1-b930-d4dc440b031c",
+      "comment": "BeforeTEST",
+      "command": "",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "b3219462-fd84-4ce7-81eb-3866720fc8ff",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "id=back-to-top",
+      "targets": [
+        ["id=back-to-top", "id"],
+        ["css=#back-to-top", "css:finder"],
+        ["xpath=//div[@id='back-to-top']", "xpath:attributes"],
+        ["xpath=//body/a/div", "xpath:position"],
+        ["xpath=//div[contains(.,'Haut de page')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "a2ffbb94-a4f1-4226-8bd8-4f23e6da6fe1",
+      "comment": "",
+      "command": "click",
+      "target": "css=.btn-dropdown-add",
+      "targets": [
+        ["css=.btn-dropdown-add", "css:finder"],
+        ["xpath=//div[@id='button-zone']/div/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3e004ee3-ce70-49b9-805c-d09d83ac88d8",
+      "comment": "",
+      "command": "click",
+      "target": "css=li:nth-child(4) span",
+      "targets": [
+        ["css=li:nth-child(4) span", "css:finder"],
+        ["xpath=//div[@id='button-zone']/div/ul/li[4]/a/span", "xpath:idRelative"],
+        ["xpath=//li[4]/a/span", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "0e4cf90f-d2d0-4896-8daf-2b3a8999596e",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_companyName",
+      "targets": [
+        ["id=subcontractor_company_registration_companyName", "id"],
+        ["name=subcontractor_company_registration[companyName]", "name"],
+        ["css=#subcontractor_company_registration_companyName", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_companyName']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "76549685-745c-4064-bfbe-1f51cb286bc2",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_companyName",
+      "targets": [
+        ["id=subcontractor_company_registration_companyName", "id"],
+        ["name=subcontractor_company_registration[companyName]", "name"],
+        ["css=#subcontractor_company_registration_companyName", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_companyName']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div/div/div/div/input", "xpath:position"]
+      ],
+      "value": "ETSDiff-TEST"
+    }, {
+      "id": "e0230e0c-604f-49e4-8ecc-6389f5dcd8e9",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "123"
+    }, {
+      "id": "0a5cb13d-09d4-4ce9-bd02-babd966f7e2e",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_siren_search_button",
+      "targets": [
+        ["id=subcontractor_company_registration_siren_search_button", "id"],
+        ["name=subcontractor_company_registration[siren_search_button]", "name"],
+        ["css=#subcontractor_company_registration_siren_search_button", "css:finder"],
+        ["xpath=//button[@id='subcontractor_company_registration_siren_search_button']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div[2]/button", "xpath:idRelative"],
+        ["xpath=//div[2]/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Recherche par Siren')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "bf7fbb6a-4348-448d-a074-c8f31612081f",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_companyName",
+      "targets": [
+        ["id=subcontractor_company_registration_companyName", "id"],
+        ["name=subcontractor_company_registration[companyName]", "name"],
+        ["css=#subcontractor_company_registration_companyName", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_companyName']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "24adf784-0cf8-447a-af4d-1ab84fd5958e",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_companyName",
+      "targets": [
+        ["id=subcontractor_company_registration_companyName", "id"],
+        ["name=subcontractor_company_registration[companyName]", "name"],
+        ["css=#subcontractor_company_registration_companyName", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_companyName']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div/div/div/div/input", "xpath:position"]
+      ],
+      "value": "ETSDiff-TEST"
+    }, {
+      "id": "9073353d-382e-4f14-9b8e-2281d2dbd4d4",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "111111"
+    }, {
+      "id": "f848cb41-bba3-4355-9665-7a190ec817c0",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "${KEY_DOWN}"
+    }, {
+      "id": "21d55b01-b734-4c81-b02a-f0b566827b3d",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "${KEY_TAB}"
+    }, {
+      "id": "c6de6812-5512-454c-9964-289784247f37",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e85462d0-d0b4-4789-82f7-53f9a4abb08f",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ed524fba-8b95-4127-bd1c-affb1897821b",
+      "comment": "",
+      "command": "doubleClick",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "cd39df05-b83c-4480-8a3b-e2855cd2068e",
+      "comment": "",
+      "command": "sendKeys",
+      "target": "id=subcontractor_company_registration_siren",
+      "targets": [
+        ["id=subcontractor_company_registration_siren", "id"],
+        ["name=subcontractor_company_registration[siren]", "name"],
+        ["css=#subcontractor_company_registration_siren", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siren']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "${KEY_TAB}"
+    }, {
+      "id": "35b677f7-a163-4120-b04d-b17861687614",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_siret",
+      "targets": [
+        ["id=subcontractor_company_registration_siret", "id"],
+        ["name=subcontractor_company_registration[siret]", "name"],
+        ["css=#subcontractor_company_registration_siret", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siret']", "xpath:attributes"],
+        ["xpath=//div[@id='siretDiv']/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "8d3f0df3-25a8-4870-94a0-6abd966854a0",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_siret",
+      "targets": [
+        ["id=subcontractor_company_registration_siret", "id"],
+        ["name=subcontractor_company_registration[siret]", "name"],
+        ["css=#subcontractor_company_registration_siret", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_siret']", "xpath:attributes"],
+        ["xpath=//div[@id='siretDiv']/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[3]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "12321"
+    }, {
+      "id": "442d0d84-1b2d-4866-9dc4-6a730ff3aed9",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_apeCode",
+      "targets": [
+        ["id=subcontractor_company_registration_apeCode", "id"],
+        ["name=subcontractor_company_registration[apeCode]", "name"],
+        ["css=#subcontractor_company_registration_apeCode", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_apeCode']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[4]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "7dd9121a-47c0-4825-927a-0c73312596d3",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_apeCode",
+      "targets": [
+        ["id=subcontractor_company_registration_apeCode", "id"],
+        ["name=subcontractor_company_registration[apeCode]", "name"],
+        ["css=#subcontractor_company_registration_apeCode", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_apeCode']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset/div[4]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[4]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "NA"
+    }, {
+      "id": "f49dc12b-2f3f-4fb6-8cfa-1f1ad57ede1d",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_address",
+      "targets": [
+        ["id=subcontractor_company_registration_address", "id"],
+        ["name=subcontractor_company_registration[address]", "name"],
+        ["css=#subcontractor_company_registration_address", "css:finder"],
+        ["xpath=//textarea[@id='subcontractor_company_registration_address']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[2]/div/div/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "6a7a06b2-dc4a-4856-8e7b-a4c93584f248",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_address",
+      "targets": [
+        ["id=subcontractor_company_registration_address", "id"],
+        ["name=subcontractor_company_registration[address]", "name"],
+        ["css=#subcontractor_company_registration_address", "css:finder"],
+        ["xpath=//textarea[@id='subcontractor_company_registration_address']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[2]/div/div/div/div/textarea", "xpath:idRelative"],
+        ["xpath=//textarea", "xpath:position"]
+      ],
+      "value": "1 rue Test"
+    }, {
+      "id": "0e843afa-e550-4337-a1ba-6bace5fc89d3",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_postalCode",
+      "targets": [
+        ["id=subcontractor_company_registration_postalCode", "id"],
+        ["name=subcontractor_company_registration[postalCode]", "name"],
+        ["css=#subcontractor_company_registration_postalCode", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_postalCode']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[2]/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "3644ab72-8be4-401c-8a65-5a9f74e67943",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_postalCode",
+      "targets": [
+        ["id=subcontractor_company_registration_postalCode", "id"],
+        ["name=subcontractor_company_registration[postalCode]", "name"],
+        ["css=#subcontractor_company_registration_postalCode", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_postalCode']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[2]/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": "1111"
+    }, {
+      "id": "1c7e5cf1-72c4-4bcc-82e2-1f17abaf8d1c",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_city",
+      "targets": [
+        ["id=subcontractor_company_registration_city", "id"],
+        ["name=subcontractor_company_registration[city]", "name"],
+        ["css=#subcontractor_company_registration_city", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_city']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[2]/div/div[2]/div[2]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div/input", "xpath:position"]
+      ],
+      "value": "Test"
+    }, {
+      "id": "de12ed34-cb3f-4b30-90de-a8bf9c32b01c",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_country",
+      "targets": [
+        ["id=subcontractor_company_registration_country", "id"],
+        ["name=subcontractor_company_registration[country]", "name"],
+        ["css=#subcontractor_company_registration_country", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_country']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[2]/div/div[2]/div[3]/div/input", "xpath:idRelative"],
+        ["xpath=//div[2]/div[3]/div/input", "xpath:position"]
+      ],
+      "value": "France"
+    }, {
+      "id": "6a3577da-14d3-433e-80bc-86ab507da3ba",
+      "comment": "",
+      "command": "click",
+      "target": "id=subcontractor_company_registration_accountingContactFirstName",
+      "targets": [
+        ["id=subcontractor_company_registration_accountingContactFirstName", "id"],
+        ["name=subcontractor_company_registration[accountingContactFirstName]", "name"],
+        ["css=#subcontractor_company_registration_accountingContactFirstName", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_accountingContactFirstName']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[3]/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//fieldset[3]/div/div/div/div/input", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "4854ffbb-b816-4dd8-b9aa-92d6f394da46",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_accountingContactFirstName",
+      "targets": [
+        ["id=subcontractor_company_registration_accountingContactFirstName", "id"],
+        ["name=subcontractor_company_registration[accountingContactFirstName]", "name"],
+        ["css=#subcontractor_company_registration_accountingContactFirstName", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_accountingContactFirstName']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[3]/div/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//fieldset[3]/div/div/div/div/input", "xpath:position"]
+      ],
+      "value": "ETS"
+    }, {
+      "id": "0e5bda05-cf08-4a65-a67e-6b7ccd4ed329",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_accountingContactLastName",
+      "targets": [
+        ["id=subcontractor_company_registration_accountingContactLastName", "id"],
+        ["name=subcontractor_company_registration[accountingContactLastName]", "name"],
+        ["css=#subcontractor_company_registration_accountingContactLastName", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_accountingContactLastName']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[3]/div/div[2]/div/div/input", "xpath:idRelative"],
+        ["xpath=//fieldset[3]/div/div[2]/div/div/input", "xpath:position"]
+      ],
+      "value": "Test"
+    }, {
+      "id": "8134b6c5-a002-4264-b45f-f166a750deae",
+      "comment": "",
+      "command": "type",
+      "target": "id=subcontractor_company_registration_accountingContactEmail",
+      "targets": [
+        ["id=subcontractor_company_registration_accountingContactEmail", "id"],
+        ["name=subcontractor_company_registration[accountingContactEmail]", "name"],
+        ["css=#subcontractor_company_registration_accountingContactEmail", "css:finder"],
+        ["xpath=//input[@id='subcontractor_company_registration_accountingContactEmail']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[3]/div[2]/div/div/div/input", "xpath:idRelative"],
+        ["xpath=//fieldset[3]/div[2]/div/div/div/input", "xpath:position"]
+      ],
+      "value": "ets@test.fr"
+    }, {
+      "id": "a0e63de4-9ad9-416b-8ecc-fb781716a643",
+      "comment": "",
+      "command": "click",
+      "target": "css=.form-actions > .btn",
+      "targets": [
+        ["css=.form-actions > .btn", "css:finder"],
+        ["xpath=//button[@type='submit']", "xpath:attributes"],
+        ["xpath=//div[@id='private']/fieldset[5]/div/button", "xpath:idRelative"],
+        ["xpath=//fieldset[5]/div/button", "xpath:position"],
+        ["xpath=//button[contains(.,'Valider ')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "9e274074-27a0-4359-9d80-af371392e2e2",
+      "comment": "AfterTEST",
+      "command": "",
+      "target": "",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "fddbb0bc-9c02-42b8-a59a-c9f691fad9d3",
+      "comment": "",
+      "command": "click",
+      "target": "css=.dropdown-toggle:nth-child(2)",
+      "targets": [
+        ["css=.dropdown-toggle:nth-child(2)", "css:finder"],
+        ["xpath=//div[@id='user-show']/div/div[3]/div/button", "xpath:idRelative"],
+        ["xpath=//div[3]/div/button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "bb8f5b70-b78b-44a7-8a11-8b465c73a5a2",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Supprimer",
+      "targets": [
+        ["linkText=Supprimer", "linkText"],
+        ["css=.confirm", "css:finder"],
+        ["xpath=//a[contains(text(),'Supprimer')]", "xpath:link"],
+        ["xpath=//div[@id='user-show']/div/div[3]/div/ul/li[3]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/fr/perso/directory/subcontractor-company/etsdiff-test-75/delete')]", "xpath:href"],
+        ["xpath=//div[3]/div/ul/li[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Supprimer')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }, {
+      "id": "b50a5088-0ee3-48be-86f2-fbbf8c67b14b",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.btn-dropdown-add",
+      "targets": [
+        ["css=.btn-dropdown-add", "css:finder"],
+        ["xpath=//div[@id='button-zone']/div/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "e29da96b-6ce6-491b-9b7d-df0f3ef0ed8b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.caret:nth-child(1)",
+      "targets": [
+        ["css=.caret:nth-child(1)", "css:finder"],
+        ["xpath=//div[@id='topbar-left']/div/a/b", "xpath:idRelative"],
+        ["xpath=//b", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "ab7fddf3-66b4-49e3-b1d2-6af2d2fd4362",
+      "comment": "",
+      "command": "click",
+      "target": "linkText=Déconnexion",
+      "targets": [
+        ["linkText=Déconnexion", "linkText"],
+        ["css=.dropdown li:nth-child(3) > a", "css:finder"],
+        ["xpath=//a[contains(text(),'Déconnexion')]", "xpath:link"],
+        ["xpath=//div[@id='topbar-left']/div/ul/li[3]/a", "xpath:idRelative"],
+        ["xpath=//a[contains(@href, '/fr/logout')]", "xpath:href"],
+        ["xpath=//div[2]/div/ul/li[3]/a", "xpath:position"],
+        ["xpath=//a[contains(.,'Déconnexion')]", "xpath:innerText"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "47d46a7d-b432-4f53-a58d-7273744371e6",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["51687c50-b62e-4444-938c-729f9f7da783"]
+  }],
+  "urls": ["http://localhost/"],
+  "plugins": []
+}
