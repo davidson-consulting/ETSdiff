@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText = 2023 Davidson <twister@davidson.fr>
+# SPDX-License-Identifier = CC0-1.0
+
+[Services.client]
+process_name = "firefox"
+prepare = "python3 run_daemon.py /tmp/etsdiff_firefox.prepare"
+release = "python3 run_daemon.py /tmp/etsdiff_firefox.release"
+
+[Tests]
+
+[Tests.EOSv1]
+type = "SystemCall"
+services_names = [ "client" ]
+command_line = "python3 run_daemon.py /tmp/etsdiff_firefox.run"
