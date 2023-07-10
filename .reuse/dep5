@@ -6,3 +6,11 @@ Source: https://github.com/davidson-consulting/Ecocoding-Optimization-Analysis
 Files: *.png
 Copyright: 2023 Davidson <twister@davidson.fr>
 License: CC-BY-NC-SA-4.0
+
+Files: *.side
+Copyright: 2023 Davidson <twister@davidson.fr>
+License: CC0-1.0
+
+Files: *.toml
+Copyright: 2023 Davidson <twister@davidson.fr>
+License: CC0-1.0
