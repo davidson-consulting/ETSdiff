@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText = 2023 Davidson <twister@davidson.fr>
+# SPDX-License-Identifier = CC0-1.0
+
+[Scheduler]
+type = "StageredScheduler"
+#nb_iteration = 20 
+nb_iteration = 1
+
+[Services.client]
+process_name = "firefox"
+#prepare = "python3 ../webclientservice.py impakt.side /tmp/wcs"
+prepare = "python3 ../run_daemon.py /tmp/wcs.prepare"
+release = "python3 ../run_daemon.py /tmp/wcs.release"
+
+[Tests]
+
+[Tests.EOSv1]
+type = "SystemCall"
+services_names = [ "client" ]
+command_line = "python3 ../run_daemon.py /tmp/wcs.run"
