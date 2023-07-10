@@ -25,7 +25,7 @@ class WebClientService():
         self.run()
         self.release()
 
-        self.driver.quit()
+        #self.driver.quit()
 
     def play_scenario(self, commands):
         for command in commands:
